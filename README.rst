@@ -1,14 +1,13 @@
 Geoengine
 ========================
 
-GeoNode template project. Generates a django project with GeoNode support.
+(GeoEngine)EO Data Exploitation and Visualization Tool is a web based application developed with a goal
+of providing new working techniques that ease data collection, access,
+analysis and visualization. Collection of large EO datasets and analysis of
+the data using the random forest algorithm is done on one front-end interface.
+The proposed tool also integrates with Geoserver as a backend. EO Data Exploitation and Visualization Tool is a climate change analysisTool that utilizes pre-processed imagery to discover actionable insights. Climate change has greatly affected many countries across the globe and poses a big challenge in terms of strategic planning and sound decision-making processes. The solution will provide new working techniques that ease data collection, access, analysis and visualization. This will play a key role in analyzing satellite data and presenting the results to key stakeholders. EO Data Exploitation and Visualization Tool will consume Landsat-8 data and training areas shape files which will be used for the classification process. The proposed too will be used to analyze earth observation data of 30 m spatial resolution and a temporal resolution of 16 days. Data will loaded to the application using robust geoserver rest api endpoints that allow creating of workspaces, authentication and serving of both classified and unclassified images. Access to the classification tool will be available on the front-end ( using a very user-friendly interface) but, the process will run in the background. The analysis will produce classified Land Cover imagery which will be saved for current and future reference. Resolution of the outputs will also have a spatial resolution of 30m
 
-Developer Workshop
-------------------
 
-Available at::
-
-    http://geonode.org/dev-workshop
 
 
 Create a custom project
@@ -61,7 +60,7 @@ To setup your project using a local python virtual environment, follow these ins
     DJANGO_SETTINGS_MODULE=my_geonode.local_settings paver sync
     DJANGO_SETTINGS_MODULE=my_geonode.local_settings paver start
 
-3. Access GeoNode from browser::
+3. Access GeoEngine from browser::
 
     http://localhost:8000/
 
@@ -84,98 +83,7 @@ You need Docker 1.12 or higher, get the latest stable official release for your 
 
     cd my_geonode
 
-2. Run `docker-compose` to start it up (get a cup of coffee or tea while you wait)
 
-Remember to update "wsgi.py" in case you are using "local_settings"
-vim my_geonode/wsgi.py
---> os.environ.setdefault("DJANGO_SETTINGS_MODULE", "my_geonode.local_settings")
-
-  .. code:: bash
-
-    docker-compose build --no-cache
-    docker-compose up -d
-
-  .. code-block:: none
-
-    set COMPOSE_CONVERT_WINDOWS_PATHS=1
-
-before running docker-compose up
-
-3. Access the site on http://localhost/
-
-If you want to run the instance for development
------------------------------------------------
-
-Use dedicated docker-compose files while developing
-+++++++++++++++++++++++++++++++++++++++++++++++++++
-
-.. note:: In this example we are going to keep localhost as the target IP for GeoNode
-
-.. code:: bash
-
-  docker-compose -f docker-compose.development.yml -f docker-compose.development.override.yml up
-
-How to debug
-++++++++++++
-
-.. note:: We are supposing to use IPDB for debugging which is already available as package from the container
-
-1. Stop the container for the "django" service::
-
-  .. code:: bash
-
-    docker-compose stop django
-
-2. Run the container again with the option for service ports::
-
-  .. code:: bash
-
-    docker-compose run -e DOCKER_ENV=development --rm --service-ports django python manage.py runserver --settings=my_geonode.settings 0.0.0.0:8000
-
-3. Access the site on http://localhost/
-
-If you set an IPDB debug point with ``import ipdb ; ipdb.set_trace()`` then you should be facing its console and you can see the django
-server which is restarting at any change of your code from your local machine.
-
-If you want to run the instance on a public site
-------------------------------------------------
-
-Preparation of the image (First time only)
-++++++++++++++++++++++++++++++++++++++++++
-
-.. note:: In this example we are going to publish to the public IP http://123.456.789.111
-
-.. code:: bash
-
-  vim docker-compose.override.yml
-    --> replace localhost with 123.456.789.111 everywhere
-
-Startup the image
-+++++++++++++++++
-
-.. code:: bash
-
-  docker-compose up --build -d
-
-
-To Stop the Docker Images
--------------------------
-
-.. code:: bash
-
-  docker-compose stop
-
-
-To Fully Wipe-out the Docker Images
------------------------------------
-
-.. warning:: This will wipe out all the repositories created until now.
-
-.. note:: The images must be stopped first
-
-.. code:: bash
-
-  docker system prune -a
 
 
 Recommended: Track your changes
@@ -239,23 +147,3 @@ To run the Ansible playbook use something like this::
 
 Configuration
 =============
-
-Since this application uses geonode, base source of settings is ``geonode.settings`` module. It provides defaults for many items, which are used by geonode. This application has own settings module, ``geoengine.settings``, which includes ``geonode.settings``. It customizes few elements:
- * static/media files locations - they will be collected and stored along with this application files by default. This is useful during development.
- * Adds ``geoengine`` to installed applications, updates templates, staticfiles dirs, sets urlconf to ``geoengine.urls``.
-
-Whether you deploy development or production environment, you should create additional settings file. Convention is to make ``geoengine.local_settings`` module. It is recommended to use ``geoengine/local_settings.py``.. That file contains small subset of settings for edition. It should:
- * not be versioned along with application (because changes you make for your private deployment may become public),
- * have customized at least ``DATABASES``, ``SECRET_KEY`` and ``SITEURL``.
-
-You can add more settings there, note however, some settings (notably ``DEBUG_STATIC``, ``EMAIL_ENABLE``, ``*_ROOT``, and few others) can be used by other settings, or as condition values, which change other settings. For example, ``EMAIL_ENABLE`` defined in ``geonode.settings`` enables whole email handling block, so if you disable it in your ``local_settings``, derived settings will be preserved. You should carefully check if additional settings you change don't trigger other settings.
-
-To illustrate whole concept of chained settings:
-::
-    +------------------------+-------------+-------------------------------+-------------+----------------------------------+
-    |  GeoNode configuration |             |   Your application default    |             |  (optionally) Your deployment(s) |
-    |                        |             |        configuration          |             |                                  |
-    +========================|=============|===============================|=============|==================================+
-    |                        | included by |                               | included by |                                  |
-    |   geonode.settings     |     ->      |  geoengine.settings    |      ->     |  geoengine.local_settings |
-    +------------------------|-------------|-------------------------------|-------------|----------------------------------+
